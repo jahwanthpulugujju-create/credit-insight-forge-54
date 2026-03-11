@@ -15,7 +15,7 @@ import {
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { label: 'Companies', icon: Building2, path: '/companies' },
-  { label: 'Upload Documents', icon: Upload, path: '/upload' },
+  { label: 'Documents', icon: FileText, path: '/upload' },
   { label: 'Analysis', icon: BarChart3, path: '/analysis' },
   { label: 'Risk Signals', icon: AlertTriangle, path: '/risk-signals' },
   { label: 'Reports', icon: FileText, path: '/reports' },
