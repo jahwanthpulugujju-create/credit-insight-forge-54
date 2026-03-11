@@ -56,8 +56,8 @@ export default function Companies() {
       ) : (
         <div className="grid gap-4">
           {companies.map(c => (
-            <div key={c.id} className="metric-card flex items-center justify-between cursor-pointer hover:border-accent/30 transition-colors" onClick={() => navigate(`/companies/${c.id}`)}>
-              <div className="flex items-center gap-4">
+            <div key={c.id} className="metric-card flex items-center justify-between hover:border-accent/30 transition-colors">
+              <div className="flex items-center gap-4 cursor-pointer flex-1" onClick={() => navigate(`/companies/${c.id}/documents`)}>
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-primary" />
                 </div>
