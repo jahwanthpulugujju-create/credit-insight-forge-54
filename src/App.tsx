@@ -11,6 +11,7 @@ import Companies from "@/pages/Companies";
 import CompanyOnboarding from "@/pages/CompanyOnboarding";
 import UploadDocuments from "@/pages/UploadDocuments";
 import CompanyDocuments from "@/pages/CompanyDocuments";
+import CompanyDetail from "@/pages/CompanyDetail";
 import Analysis from "@/pages/Analysis";
 import RiskSignals from "@/pages/RiskSignals";
 import Reports from "@/pages/Reports";
