@@ -10,6 +10,7 @@ import Dashboard from "@/pages/Dashboard";
 import Companies from "@/pages/Companies";
 import CompanyOnboarding from "@/pages/CompanyOnboarding";
 import UploadDocuments from "@/pages/UploadDocuments";
+import CompanyDocuments from "@/pages/CompanyDocuments";
 import Analysis from "@/pages/Analysis";
 import RiskSignals from "@/pages/RiskSignals";
 import Reports from "@/pages/Reports";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/companies" element={<Companies />} />
               <Route path="/companies/new" element={<CompanyOnboarding />} />
+              <Route path="/companies/:companyId/documents" element={<CompanyDocuments />} />
               <Route path="/upload" element={<UploadDocuments />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/risk-signals" element={<RiskSignals />} />
