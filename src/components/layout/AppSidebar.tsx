@@ -7,6 +7,7 @@ import {
   BarChart3,
   AlertTriangle,
   FileText,
+  FileSearch,
   Settings,
   LogOut,
   Shield,
