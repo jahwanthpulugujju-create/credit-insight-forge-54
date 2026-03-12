@@ -70,7 +70,7 @@ export default function CompanyReport() {
       supabase.from('companies').select('id, company_name, sector, subsector, headquarters').eq('id', companyId).single(),
       supabase.from('credit_scores').select('*').eq('company_id', companyId).order('created_at', { ascending: false }).limit(1),
     ]).then(([rRes, cRes, sRes]) => {
-      setReport(rRes.data);
+      setReport(rRes.data as any);
       setCompany(cRes.data);
       setScore(sRes.data?.[0] ?? null);
       setLoading(false);
