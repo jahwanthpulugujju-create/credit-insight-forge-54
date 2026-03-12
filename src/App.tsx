@@ -12,6 +12,7 @@ import CompanyOnboarding from "@/pages/CompanyOnboarding";
 import UploadDocuments from "@/pages/UploadDocuments";
 import CompanyDocuments from "@/pages/CompanyDocuments";
 import CompanyDetail from "@/pages/CompanyDetail";
+import CompanyReport from "@/pages/CompanyReport";
 import Analysis from "@/pages/Analysis";
 import RiskSignals from "@/pages/RiskSignals";
 import Reports from "@/pages/Reports";
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/companies/new" element={<CompanyOnboarding />} />
               <Route path="/companies/:companyId" element={<CompanyDetail />} />
               <Route path="/companies/:companyId/documents" element={<CompanyDocuments />} />
+              <Route path="/companies/:companyId/report/:reportId" element={<CompanyReport />} />
               <Route path="/upload" element={<UploadDocuments />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/risk-signals" element={<RiskSignals />} />
