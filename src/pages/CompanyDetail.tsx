@@ -391,6 +391,7 @@ export default function CompanyDetail() {
               );
             })}
           </div>
+          <FiveCsChart score={creditScore} />
           {reasoning && (
             <div className="metric-card mt-3">
               <p className="text-xs text-muted-foreground mb-2">AI Reasoning</p>
