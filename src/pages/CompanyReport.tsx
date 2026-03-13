@@ -77,52 +77,147 @@ export default function CompanyReport() {
     });
   }, [companyId, reportId]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!report || !company) return;
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+    
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const content = report.content;
-    const text = `
-CREDIT ASSESSMENT REPORT
-========================
-Company: ${company.company_name}
-Sector: ${company.sector}
-Date: ${new Date(report.created_at).toLocaleDateString('en-IN')}
-Recommendation: ${report.recommendation}
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const usable = pageWidth - margin * 2;
+    let y = 20;
 
-EXECUTIVE SUMMARY
-${content?.executive_summary || 'N/A'}
+    const addPage = () => { doc.addPage(); y = 20; };
+    const checkPage = (needed: number) => { if (y + needed > 270) addPage(); };
 
-COMPANY OVERVIEW
-${content?.company_overview || 'N/A'}
+    // Title
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Credit Assessment Report', margin, y);
+    y += 10;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100);
+    doc.text(`${company.company_name} • ${company.sector} • ${new Date(report.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`, margin, y);
+    y += 6;
+    doc.text(`Recommendation: ${report.recommendation || 'N/A'}${score ? ` • Credit Score: ${score.total_score}/100 (${score.credit_grade})` : ''}`, margin, y);
+    doc.setTextColor(0);
+    y += 10;
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
 
-FINANCIAL ANALYSIS
-${content?.financial_analysis || 'N/A'}
+    const addSection = (title: string, body: string | undefined | null) => {
+      if (!body) return;
+      checkPage(30);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, margin, y);
+      y += 7;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const lines = doc.splitTextToSize(body, usable);
+      for (const line of lines) {
+        checkPage(6);
+        doc.text(line, margin, y);
+        y += 5;
+      }
+      y += 6;
+    };
 
-RISK ASSESSMENT
-${content?.risk_assessment || 'N/A'}
+    addSection('Executive Summary', content?.executive_summary);
+    addSection('Company Overview', content?.company_overview);
+    addSection('Financial Analysis', content?.financial_analysis);
+    addSection('Risk Assessment', content?.risk_assessment);
+    addSection('Credit Score Analysis', content?.credit_score_analysis);
 
-CREDIT SCORE ANALYSIS
-${content?.credit_score_analysis || 'N/A'}
-Score: ${score?.total_score || 'N/A'}/100 | Grade: ${score?.credit_grade || 'N/A'}
+    // Credit Score Table
+    if (score) {
+      checkPage(40);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Credit Score Breakdown', margin, y);
+      y += 4;
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin, right: margin },
+        head: [['Component', 'Score', 'Max', 'Percentage']],
+        body: [
+          ['Character', String(score.character_score ?? 0), '25', `${Math.round(((score.character_score ?? 0) / 25) * 100)}%`],
+          ['Capacity', String(score.capacity_score ?? 0), '25', `${Math.round(((score.capacity_score ?? 0) / 25) * 100)}%`],
+          ['Capital', String(score.capital_score ?? 0), '20', `${Math.round(((score.capital_score ?? 0) / 20) * 100)}%`],
+          ['Collateral', String(score.collateral_score ?? 0), '15', `${Math.round(((score.collateral_score ?? 0) / 15) * 100)}%`],
+          ['Conditions', String(score.conditions_score ?? 0), '15', `${Math.round(((score.conditions_score ?? 0) / 15) * 100)}%`],
+          ['Total', String(score.total_score ?? 0), '100', `${score.total_score ?? 0}%`],
+        ],
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [30, 41, 59] },
+      });
+      y = (doc as any).lastAutoTable.finalY + 10;
+    }
 
-SWOT ANALYSIS
-Strengths: ${content?.swot?.strengths?.join('; ') || 'N/A'}
-Weaknesses: ${content?.swot?.weaknesses?.join('; ') || 'N/A'}
-Opportunities: ${content?.swot?.opportunities?.join('; ') || 'N/A'}
-Threats: ${content?.swot?.threats?.join('; ') || 'N/A'}
+    // SWOT
+    if (content?.swot) {
+      checkPage(30);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SWOT Analysis', margin, y);
+      y += 4;
+      const swotData: string[][] = [];
+      const maxLen = Math.max(
+        content.swot.strengths?.length ?? 0, content.swot.weaknesses?.length ?? 0,
+        content.swot.opportunities?.length ?? 0, content.swot.threats?.length ?? 0
+      );
+      for (let i = 0; i < maxLen; i++) {
+        swotData.push([
+          content.swot.strengths?.[i] ?? '',
+          content.swot.weaknesses?.[i] ?? '',
+          content.swot.opportunities?.[i] ?? '',
+          content.swot.threats?.[i] ?? '',
+        ]);
+      }
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin, right: margin },
+        head: [['Strengths', 'Weaknesses', 'Opportunities', 'Threats']],
+        body: swotData,
+        styles: { fontSize: 8, cellWidth: 'wrap' },
+        headStyles: { fillColor: [30, 41, 59] },
+        columnStyles: { 0: { cellWidth: usable / 4 }, 1: { cellWidth: usable / 4 }, 2: { cellWidth: usable / 4 }, 3: { cellWidth: usable / 4 } },
+      });
+      y = (doc as any).lastAutoTable.finalY + 10;
+    }
 
-RECOMMENDATION
-${content?.recommendation_details || 'N/A'}
+    addSection('Recommendation Details', content?.recommendation_details);
 
-${content?.conditions?.length ? `CONDITIONS:\n${content.conditions.map((c, i) => `${i + 1}. ${c}`).join('\n')}` : ''}
-    `.trim();
+    if (content?.conditions?.length) {
+      checkPage(20);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Conditions:', margin, y);
+      y += 6;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      content.conditions.forEach((c, i) => {
+        checkPage(6);
+        doc.text(`${i + 1}. ${c}`, margin + 4, y);
+        y += 5;
+      });
+    }
 
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Credit_Report_${company.company_name.replace(/\s+/g, '_')}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Footer on each page
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(`Intelli-Credit • Confidential • Page ${i} of ${totalPages}`, pageWidth / 2, 290, { align: 'center' });
+      doc.setTextColor(0);
+    }
+
+    doc.save(`Credit_Report_${company.company_name.replace(/\s+/g, '_')}.pdf`);
   };
 
   if (loading) return <div className="text-center py-16 text-muted-foreground">Loading report…</div>;
