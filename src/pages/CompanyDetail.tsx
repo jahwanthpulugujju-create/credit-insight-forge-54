@@ -426,6 +426,7 @@ export default function CompanyDetail() {
               </div>
             ))}
           </div>
+          <FinancialSignalsChart signals={signals} />
         </div>
       )}
 
