@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Plus, Building2 } from 'lucide-react';
+import { Plus, Building2, ArrowUpRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface Company {
   id: string;
@@ -31,44 +32,58 @@ export default function Companies() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-8">
+      <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold">Companies</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage borrower entities</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-accent mb-2">Entity Management</p>
+          <h1 className="text-3xl font-display font-bold tracking-tight">Companies</h1>
+          <p className="text-muted-foreground text-sm mt-1.5">Manage and analyze borrower entities in your portfolio.</p>
         </div>
-        <Button onClick={() => navigate('/companies/new')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-          <Plus className="w-4 h-4 mr-2" /> New Company
+        <Button onClick={() => navigate('/companies/new')} className="bg-accent text-accent-foreground hover:bg-accent/90" style={{ boxShadow: 'var(--shadow-glow-sm)' }}>
+          <Plus className="w-4 h-4 mr-2" /> Onboard Company
         </Button>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading...</div>
+        <div className="text-center py-16 text-muted-foreground">
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm">Loading entities...</p>
+        </div>
       ) : companies.length === 0 ? (
-        <div className="metric-card text-center py-16">
-          <Building2 className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
+        <div className="metric-card text-center py-20">
+          <div className="w-14 h-14 rounded-2xl bg-accent/10 mx-auto mb-4 flex items-center justify-center">
+            <Building2 className="w-7 h-7 text-accent" />
+          </div>
           <h3 className="font-display font-semibold text-lg mb-2">No companies yet</h3>
-          <p className="text-muted-foreground text-sm mb-6">Start by onboarding your first borrower entity.</p>
-          <Button onClick={() => navigate('/companies/new')} className="bg-accent text-accent-foreground hover:bg-accent/90">
+          <p className="text-muted-foreground text-sm mb-6 max-w-xs mx-auto">Start your credit analysis journey by onboarding your first borrower entity.</p>
+          <Button onClick={() => navigate('/companies/new')} className="bg-accent text-accent-foreground hover:bg-accent/90" style={{ boxShadow: 'var(--shadow-glow-sm)' }}>
             <Plus className="w-4 h-4 mr-2" /> Onboard Company
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {companies.map(c => (
-            <div key={c.id} className="metric-card flex items-center justify-between hover:border-accent/30 transition-colors cursor-pointer" onClick={() => navigate(`/companies/${c.id}`)}>
+        <div className="grid gap-3">
+          {companies.map((c, i) => (
+            <div
+              key={c.id}
+              className="metric-card flex items-center justify-between cursor-pointer group animate-fade-in"
+              onClick={() => navigate(`/companies/${c.id}`)}
+              style={{ animationDelay: `${i * 0.05}s` }}
+            >
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-primary" />
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                  <Building2 className="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">{c.company_name}</h3>
-                  <p className="text-sm text-muted-foreground">{c.sector}</p>
+                  <h3 className="font-semibold group-hover:text-accent transition-colors">{c.company_name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{c.sector} • Added {new Date(c.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold">{formatCurrency(c.annual_turnover)}</p>
-                <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString('en-IN')}</p>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="font-display font-bold text-sm">{formatCurrency(c.annual_turnover)}</p>
+                  <p className="text-[10px] text-muted-foreground">Annual Turnover</p>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>
           ))}
