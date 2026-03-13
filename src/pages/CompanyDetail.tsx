@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import FiveCsChart from '@/components/company/FiveCsChart';
+import FinancialSignalsChart from '@/components/company/FinancialSignalsChart';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -389,6 +391,7 @@ export default function CompanyDetail() {
               );
             })}
           </div>
+          <FiveCsChart score={creditScore} />
           {reasoning && (
             <div className="metric-card mt-3">
               <p className="text-xs text-muted-foreground mb-2">AI Reasoning</p>
@@ -423,6 +426,7 @@ export default function CompanyDetail() {
               </div>
             ))}
           </div>
+          <FinancialSignalsChart signals={signals} />
         </div>
       )}
 
