@@ -10,9 +10,9 @@ interface CreditScore {
 
 const getColor = (score: number, max: number) => {
   const pct = (score / max) * 100;
-  if (pct >= 70) return 'hsl(var(--risk-low))';
-  if (pct >= 50) return 'hsl(var(--risk-medium))';
-  return 'hsl(var(--risk-high))';
+  if (pct >= 70) return 'hsl(160, 84%, 39%)';
+  if (pct >= 50) return 'hsl(38, 92%, 50%)';
+  return 'hsl(0, 72%, 51%)';
 };
 
 export default function FiveCsChart({ score }: { score: CreditScore }) {
@@ -26,17 +26,17 @@ export default function FiveCsChart({ score }: { score: CreditScore }) {
 
   return (
     <div className="metric-card">
-      <p className="text-xs text-muted-foreground mb-3">Score vs Maximum by Component</p>
+      <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wider font-medium">Score vs Maximum by Component</p>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} barGap={4}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} domain={[0, 25]} />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(225, 20%, 16%)" vertical={false} />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(215, 15%, 55%)' }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 11, fill: 'hsl(215, 15%, 55%)' }} axisLine={false} tickLine={false} domain={[0, 25]} />
           <Tooltip
-            contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+            contentStyle={{ background: 'hsl(225, 25%, 10%)', border: '1px solid hsl(225, 20%, 16%)', borderRadius: 10, fontSize: 12, color: 'hsl(210, 20%, 92%)' }}
             formatter={(value: number, name: string) => [value, name === 'score' ? 'Score' : 'Max']}
           />
-          <Bar dataKey="max" radius={[4, 4, 0, 0]} fill="hsl(var(--muted))" name="Max" />
+          <Bar dataKey="max" radius={[4, 4, 0, 0]} fill="hsl(225, 20%, 16%)" name="Max" />
           <Bar dataKey="score" radius={[4, 4, 0, 0]} name="Score">
             {data.map((entry, i) => (
               <Cell key={i} fill={getColor(entry.score, entry.max)} />
