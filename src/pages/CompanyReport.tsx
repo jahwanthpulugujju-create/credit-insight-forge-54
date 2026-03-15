@@ -77,6 +77,36 @@ export default function CompanyReport() {
     });
   }, [companyId, reportId]);
 
+  // Clean up AI text that has spaces between every character
+  const cleanText = (text: string | undefined | null): string | undefined => {
+    if (!text) return undefined;
+    // Detect pattern: single chars separated by spaces like "N e x a l o g i c"
+    // If more than 40% of "words" are single characters, it's likely spaced-out text
+    const words = text.split(' ');
+    const singleCharWords = words.filter(w => w.length === 1 && /[a-zA-Z]/.test(w)).length;
+    if (words.length > 10 && singleCharWords / words.length > 0.3) {
+      // Reconstruct: join single-char sequences, keep normal words
+      let result = '';
+      let i = 0;
+      while (i < words.length) {
+        if (words[i].length === 1 && /[a-zA-Z¹₹]/.test(words[i])) {
+          // Collect consecutive single chars
+          let charSeq = '';
+          while (i < words.length && words[i].length <= 2 && /^[a-zA-Z¹₹.,;:!?'"\-—()/%0-9]+$/.test(words[i])) {
+            charSeq += words[i];
+            i++;
+          }
+          result += (result && !result.endsWith(' ') ? ' ' : '') + charSeq;
+        } else {
+          result += (result ? ' ' : '') + words[i];
+          i++;
+        }
+      }
+      return result;
+    }
+    return text;
+  };
+
   const handleDownload = async () => {
     if (!report || !company) return;
     const { default: jsPDF } = await import('jspdf');
@@ -110,7 +140,8 @@ export default function CompanyReport() {
     y += 8;
 
     const addSection = (title: string, body: string | undefined | null) => {
-      if (!body) return;
+      const cleaned = cleanText(body);
+      if (!cleaned) return;
       checkPage(30);
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
@@ -118,7 +149,7 @@ export default function CompanyReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      const lines = doc.splitTextToSize(body, usable);
+      const lines = doc.splitTextToSize(cleaned, usable);
       for (const line of lines) {
         checkPage(6);
         doc.text(line, margin, y);
