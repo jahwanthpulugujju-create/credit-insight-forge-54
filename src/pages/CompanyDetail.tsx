@@ -158,6 +158,7 @@ export default function CompanyDetail() {
     }
     setSignals(Array.from(signalMap.values()));
     setRisks(risksRes.data ?? []);
+    setResearch(researchRes.data ?? []);
     setCreditScore(scoreRes.data?.[0] ?? null);
     setReports(reportsRes.data ?? []);
 
