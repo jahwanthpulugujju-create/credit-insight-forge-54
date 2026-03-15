@@ -227,7 +227,7 @@ export default function CompanyDetail() {
 
   const handleScore = async () => {
     if (!companyId) return;
-    setScoring(true);
+    setScoring(true); setActiveStep('score');
     try {
       const { error } = await supabase.functions.invoke('calculate-credit-score', { body: { companyId } });
       if (error) throw error;
