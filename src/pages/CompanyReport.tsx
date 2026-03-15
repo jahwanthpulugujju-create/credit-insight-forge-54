@@ -327,7 +327,7 @@ export default function CompanyReport() {
           <h2 className="section-title mb-3 flex items-center gap-2">
             <Shield className="w-4 h-4" /> Credit Score Breakdown
           </h2>
-          <p className="text-sm leading-relaxed mb-4">{content?.credit_score_analysis}</p>
+          <p className="text-sm leading-relaxed mb-4">{cleanText(content?.credit_score_analysis)}</p>
           <div className="grid grid-cols-5 gap-3">
             {[
               { label: 'Character', score: score.character_score, max: 25 },
