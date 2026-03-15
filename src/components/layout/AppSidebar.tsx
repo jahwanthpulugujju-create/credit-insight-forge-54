@@ -12,6 +12,7 @@ import {
   Shield,
   ChevronRight,
 } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 const navSections = [
   {
