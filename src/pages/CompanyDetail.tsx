@@ -304,36 +304,38 @@ export default function CompanyDetail() {
         </div>
       </div>
 
+      {/* Pipeline Progress */}
+      <PipelineProgress
+        docsCount={docStats.total}
+        signalsCount={signals.length}
+        risksCount={risks.length}
+        hasScore={!!creditScore}
+        reportsCount={reports.length}
+        activeStep={activeStep}
+      />
+
       {/* Pipeline Actions */}
-      <div className="metric-card">
-        <h2 className="section-title mb-3 flex items-center gap-2">
-          <Zap className="w-4 h-4" /> Underwriting Pipeline
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Run each step of the AI-powered credit assessment pipeline. Steps should be executed in order.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Button onClick={handleExtract} disabled={extracting} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
-            <span className="text-xs">Extract Financials</span>
-            {signals.length > 0 && <span className="text-[10px] text-risk-low">✓ {signals.length} signals</span>}
-          </Button>
-          <Button onClick={handleResearch} disabled={researching} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {researching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            <span className="text-xs">Secondary Research</span>
-            {risks.length > 0 && <span className="text-[10px] text-risk-low">✓ {risks.length} risks</span>}
-          </Button>
-          <Button onClick={handleScore} disabled={scoring} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {scoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
-            <span className="text-xs">Credit Score</span>
-            {creditScore && <span className="text-[10px] text-risk-low">✓ {creditScore.total_score}/100</span>}
-          </Button>
-          <Button onClick={handleGenerateReport} disabled={generating} className="h-auto py-3 flex-col gap-1 bg-accent text-accent-foreground hover:bg-accent/90">
-            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
-            <span className="text-xs">Generate Report</span>
-            {reports.length > 0 && <span className="text-[10px]">✓ {reports.length} report(s)</span>}
-          </Button>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Button onClick={handleExtract} disabled={extracting} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
+          <span className="text-xs">Extract Financials</span>
+          {signals.length > 0 && <span className="text-[10px] text-risk-low">✓ {signals.length} signals</span>}
+        </Button>
+        <Button onClick={handleResearch} disabled={researching} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {researching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          <span className="text-xs">Secondary Research</span>
+          {risks.length > 0 && <span className="text-[10px] text-risk-low">✓ {risks.length} risks</span>}
+        </Button>
+        <Button onClick={handleScore} disabled={scoring} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {scoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+          <span className="text-xs">Credit Score</span>
+          {creditScore && <span className="text-[10px] text-risk-low">✓ {creditScore.total_score}/100</span>}
+        </Button>
+        <Button onClick={handleGenerateReport} disabled={generating} className="h-auto py-3 flex-col gap-1 bg-accent text-accent-foreground hover:bg-accent/90">
+          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+          <span className="text-xs">Generate Report</span>
+          {reports.length > 0 && <span className="text-[10px]">✓ {reports.length} report(s)</span>}
+        </Button>
       </div>
 
       {/* Document Stats */}
