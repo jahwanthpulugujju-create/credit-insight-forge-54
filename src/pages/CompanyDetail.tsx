@@ -367,6 +367,9 @@ export default function CompanyDetail() {
         )}
       </div>
 
+      {/* Dynamic Schema Editor */}
+      {companyId && <SchemaEditor companyId={companyId} />}
+
       {/* Credit Score */}
       {creditScore && (
         <div>
