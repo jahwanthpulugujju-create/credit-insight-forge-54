@@ -222,7 +222,7 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Research failed');
     }
-    setResearching(false);
+    setResearching(false); setActiveStep(null);
   };
 
   const handleScore = async () => {
