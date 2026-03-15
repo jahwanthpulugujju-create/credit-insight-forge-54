@@ -215,6 +215,82 @@ export type Database = {
           },
         ]
       }
+      extraction_schema_fields: {
+        Row: {
+          created_at: string
+          display_order: number
+          field_name: string
+          field_type: string
+          id: string
+          is_required: boolean
+          schema_id: string
+          source_document: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          field_name: string
+          field_type?: string
+          id?: string
+          is_required?: boolean
+          schema_id: string
+          source_document?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          field_name?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean
+          schema_id?: string
+          source_document?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_schema_fields_schema_id_fkey"
+            columns: ["schema_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_schemas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      extraction_schemas: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          id: string
+          schema_name: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          schema_name?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          schema_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_schemas_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_signals: {
         Row: {
           company_id: string
