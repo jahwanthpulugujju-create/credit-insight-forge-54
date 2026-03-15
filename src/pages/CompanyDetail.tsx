@@ -213,7 +213,7 @@ export default function CompanyDetail() {
 
   const handleResearch = async () => {
     if (!companyId) return;
-    setResearching(true);
+    setResearching(true); setActiveStep('research');
     try {
       const { error } = await supabase.functions.invoke('research-company', { body: { companyId } });
       if (error) throw error;
