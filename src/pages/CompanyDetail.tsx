@@ -476,6 +476,15 @@ export default function CompanyDetail() {
           </div>
         </div>
       )}
+      {/* AI Risk Radar */}
+      {(risks.length > 0 || signals.length > 0) && company && (
+        <RiskRadar risks={risks} signals={signals} company={company} />
+      )}
+
+      {/* Data Triangulation */}
+      {(signals.length > 0 || risks.length > 0) && (
+        <TriangulationView signals={signals} risks={risks} research={research} />
+      )}
 
       {/* Financial Snapshot */}
       <div>
