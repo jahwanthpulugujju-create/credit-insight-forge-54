@@ -294,7 +294,7 @@ export default function CompanyReport() {
       {/* Executive Summary */}
       <div className="metric-card">
         <h2 className="section-title mb-3">Executive Summary</h2>
-        <p className="text-sm leading-relaxed">{content?.executive_summary}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.executive_summary)}</p>
       </div>
 
       {/* Company Overview */}
