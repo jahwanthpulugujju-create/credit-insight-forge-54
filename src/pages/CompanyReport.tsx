@@ -302,7 +302,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <FileText className="w-4 h-4" /> Company Overview
         </h2>
-        <p className="text-sm leading-relaxed">{content?.company_overview}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.company_overview)}</p>
       </div>
 
       {/* Financial Analysis */}
@@ -310,7 +310,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <TrendingUp className="w-4 h-4" /> Financial Analysis
         </h2>
-        <p className="text-sm leading-relaxed">{content?.financial_analysis}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.financial_analysis)}</p>
       </div>
 
       {/* Risk Assessment */}
@@ -318,7 +318,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" /> Risk Assessment
         </h2>
-        <p className="text-sm leading-relaxed">{content?.risk_assessment}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.risk_assessment)}</p>
       </div>
 
       {/* Credit Score Analysis */}
