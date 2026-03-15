@@ -236,7 +236,7 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Scoring failed');
     }
-    setScoring(false);
+    setScoring(false); setActiveStep(null);
   };
 
   const handleGenerateReport = async () => {
