@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Shield, ArrowRight, Zap, BarChart3, FileText } from 'lucide-react';
+import { ArrowRight, Zap, BarChart3, FileText } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { toast } from 'sonner';
 
 export default function Auth() {
@@ -59,8 +60,8 @@ export default function Auth() {
 
         <div className="relative z-10 px-16 max-w-lg">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center relative" style={{ background: 'hsl(var(--accent))' }}>
-              <Shield className="w-6 h-6" style={{ color: 'hsl(var(--accent-foreground))' }} />
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center relative overflow-hidden">
+              <img src={logoImg} alt="IntelliCredit" className="w-11 h-11 object-contain" />
               <div className="absolute inset-0 rounded-xl animate-glow-pulse" style={{ boxShadow: '0 0 25px hsl(var(--accent) / 0.4)' }} />
             </div>
             <div>
@@ -104,8 +105,8 @@ export default function Auth() {
         <div className="w-full max-w-[380px] relative z-10">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent">
-              <Shield className="w-5 h-5 text-accent-foreground" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src={logoImg} alt="IntelliCredit" className="w-10 h-10 object-contain" />
             </div>
             <span className="font-display text-xl font-bold">Intelli-Credit</span>
           </div>

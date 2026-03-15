@@ -77,6 +77,36 @@ export default function CompanyReport() {
     });
   }, [companyId, reportId]);
 
+  // Clean up AI text that has spaces between every character
+  const cleanText = (text: string | undefined | null): string | undefined => {
+    if (!text) return undefined;
+    // Detect pattern: single chars separated by spaces like "N e x a l o g i c"
+    // If more than 40% of "words" are single characters, it's likely spaced-out text
+    const words = text.split(' ');
+    const singleCharWords = words.filter(w => w.length === 1 && /[a-zA-Z]/.test(w)).length;
+    if (words.length > 10 && singleCharWords / words.length > 0.3) {
+      // Reconstruct: join single-char sequences, keep normal words
+      let result = '';
+      let i = 0;
+      while (i < words.length) {
+        if (words[i].length === 1 && /[a-zA-Z¹₹]/.test(words[i])) {
+          // Collect consecutive single chars
+          let charSeq = '';
+          while (i < words.length && words[i].length <= 2 && /^[a-zA-Z¹₹.,;:!?'"\-—()/%0-9]+$/.test(words[i])) {
+            charSeq += words[i];
+            i++;
+          }
+          result += (result && !result.endsWith(' ') ? ' ' : '') + charSeq;
+        } else {
+          result += (result ? ' ' : '') + words[i];
+          i++;
+        }
+      }
+      return result;
+    }
+    return text;
+  };
+
   const handleDownload = async () => {
     if (!report || !company) return;
     const { default: jsPDF } = await import('jspdf');
@@ -110,7 +140,8 @@ export default function CompanyReport() {
     y += 8;
 
     const addSection = (title: string, body: string | undefined | null) => {
-      if (!body) return;
+      const cleaned = cleanText(body);
+      if (!cleaned) return;
       checkPage(30);
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
@@ -118,7 +149,7 @@ export default function CompanyReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      const lines = doc.splitTextToSize(body, usable);
+      const lines = doc.splitTextToSize(cleaned, usable);
       for (const line of lines) {
         checkPage(6);
         doc.text(line, margin, y);
@@ -263,7 +294,7 @@ export default function CompanyReport() {
       {/* Executive Summary */}
       <div className="metric-card">
         <h2 className="section-title mb-3">Executive Summary</h2>
-        <p className="text-sm leading-relaxed">{content?.executive_summary}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.executive_summary)}</p>
       </div>
 
       {/* Company Overview */}
@@ -271,7 +302,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <FileText className="w-4 h-4" /> Company Overview
         </h2>
-        <p className="text-sm leading-relaxed">{content?.company_overview}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.company_overview)}</p>
       </div>
 
       {/* Financial Analysis */}
@@ -279,7 +310,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <TrendingUp className="w-4 h-4" /> Financial Analysis
         </h2>
-        <p className="text-sm leading-relaxed">{content?.financial_analysis}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.financial_analysis)}</p>
       </div>
 
       {/* Risk Assessment */}
@@ -287,7 +318,7 @@ export default function CompanyReport() {
         <h2 className="section-title mb-3 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" /> Risk Assessment
         </h2>
-        <p className="text-sm leading-relaxed">{content?.risk_assessment}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.risk_assessment)}</p>
       </div>
 
       {/* Credit Score Analysis */}
@@ -296,7 +327,7 @@ export default function CompanyReport() {
           <h2 className="section-title mb-3 flex items-center gap-2">
             <Shield className="w-4 h-4" /> Credit Score Breakdown
           </h2>
-          <p className="text-sm leading-relaxed mb-4">{content?.credit_score_analysis}</p>
+          <p className="text-sm leading-relaxed mb-4">{cleanText(content?.credit_score_analysis)}</p>
           <div className="grid grid-cols-5 gap-3">
             {[
               { label: 'Character', score: score.character_score, max: 25 },
@@ -355,7 +386,7 @@ export default function CompanyReport() {
       {/* Recommendation Details */}
       <div className="metric-card">
         <h2 className="section-title mb-3">Recommendation Details</h2>
-        <p className="text-sm leading-relaxed">{content?.recommendation_details}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.recommendation_details)}</p>
         {content?.conditions && content.conditions.length > 0 && (
           <div className="mt-4">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Conditions</p>
