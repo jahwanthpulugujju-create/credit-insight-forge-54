@@ -137,13 +137,14 @@ export default function CompanyDetail() {
 
   const fetchAll = async () => {
     if (!companyId) return;
-    const [companyRes, docsRes, signalsRes, risksRes, scoreRes, reportsRes] = await Promise.all([
+    const [companyRes, docsRes, signalsRes, risksRes, scoreRes, reportsRes, researchRes] = await Promise.all([
       supabase.from('companies').select('*').eq('id', companyId).single(),
       supabase.from('documents').select('id').eq('company_id', companyId),
       supabase.from('financial_signals').select('*').eq('company_id', companyId),
       supabase.from('risk_signals').select('*').eq('company_id', companyId),
       supabase.from('credit_scores').select('*').eq('company_id', companyId).order('created_at', { ascending: false }).limit(1),
       supabase.from('reports').select('*').eq('company_id', companyId).order('created_at', { ascending: false }),
+      supabase.from('secondary_research').select('*').eq('company_id', companyId),
     ]);
 
     // Deduplicate signals by signal_name (keep latest)
