@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import FiveCsChart from '@/components/company/FiveCsChart';
 import FinancialSignalsChart from '@/components/company/FinancialSignalsChart';
+import RiskRadar from '@/components/company/RiskRadar';
+import SchemaEditor from '@/components/company/SchemaEditor';
+import TriangulationView from '@/components/company/TriangulationView';
+import PipelineProgress from '@/components/company/PipelineProgress';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -116,6 +120,7 @@ export default function CompanyDetail() {
   const [docStats, setDocStats] = useState<DocStats>({ total: 0, pending: 0, approved: 0, corrected: 0, rejected: 0, unclassified: 0 });
   const [signals, setSignals] = useState<FinancialSignal[]>([]);
   const [risks, setRisks] = useState<RiskSignal[]>([]);
+  const [research, setResearch] = useState<any[]>([]);
   const [creditScore, setCreditScore] = useState<CreditScore | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,6 +128,7 @@ export default function CompanyDetail() {
   const [researching, setResearching] = useState(false);
   const [scoring, setScoring] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [activeStep, setActiveStep] = useState<string | null>(null);
 
   useEffect(() => {
     if (!companyId) return;
@@ -131,13 +137,14 @@ export default function CompanyDetail() {
 
   const fetchAll = async () => {
     if (!companyId) return;
-    const [companyRes, docsRes, signalsRes, risksRes, scoreRes, reportsRes] = await Promise.all([
+    const [companyRes, docsRes, signalsRes, risksRes, scoreRes, reportsRes, researchRes] = await Promise.all([
       supabase.from('companies').select('*').eq('id', companyId).single(),
       supabase.from('documents').select('id').eq('company_id', companyId),
       supabase.from('financial_signals').select('*').eq('company_id', companyId),
       supabase.from('risk_signals').select('*').eq('company_id', companyId),
       supabase.from('credit_scores').select('*').eq('company_id', companyId).order('created_at', { ascending: false }).limit(1),
       supabase.from('reports').select('*').eq('company_id', companyId).order('created_at', { ascending: false }),
+      supabase.from('secondary_research').select('*').eq('company_id', companyId),
     ]);
 
     // Deduplicate signals by signal_name (keep latest)
@@ -151,6 +158,7 @@ export default function CompanyDetail() {
     }
     setSignals(Array.from(signalMap.values()));
     setRisks(risksRes.data ?? []);
+    setResearch(researchRes.data ?? []);
     setCreditScore(scoreRes.data?.[0] ?? null);
     setReports(reportsRes.data ?? []);
 
@@ -177,7 +185,7 @@ export default function CompanyDetail() {
 
   const handleExtract = async () => {
     if (!companyId) return;
-    setExtracting(true);
+    setExtracting(true); setActiveStep('extract');
     try {
       // Get approved docs
       const { data: docs } = await supabase.from('documents').select('id').eq('company_id', companyId);
@@ -200,12 +208,12 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Extraction failed');
     }
-    setExtracting(false);
+    setExtracting(false); setActiveStep(null);
   };
 
   const handleResearch = async () => {
     if (!companyId) return;
-    setResearching(true);
+    setResearching(true); setActiveStep('research');
     try {
       const { error } = await supabase.functions.invoke('research-company', { body: { companyId } });
       if (error) throw error;
@@ -214,12 +222,12 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Research failed');
     }
-    setResearching(false);
+    setResearching(false); setActiveStep(null);
   };
 
   const handleScore = async () => {
     if (!companyId) return;
-    setScoring(true);
+    setScoring(true); setActiveStep('score');
     try {
       const { error } = await supabase.functions.invoke('calculate-credit-score', { body: { companyId } });
       if (error) throw error;
@@ -228,12 +236,12 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Scoring failed');
     }
-    setScoring(false);
+    setScoring(false); setActiveStep(null);
   };
 
   const handleGenerateReport = async () => {
     if (!companyId) return;
-    setGenerating(true);
+    setGenerating(true); setActiveStep('report');
     try {
       const { data, error } = await supabase.functions.invoke('generate-investment-report', {
         body: { companyId, generatedBy: user?.id },
@@ -245,7 +253,7 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Report generation failed');
     }
-    setGenerating(false);
+    setGenerating(false); setActiveStep(null);
   };
 
   if (loading) return <div className="text-center py-16 text-muted-foreground">Loading…</div>;
@@ -296,36 +304,38 @@ export default function CompanyDetail() {
         </div>
       </div>
 
+      {/* Pipeline Progress */}
+      <PipelineProgress
+        docsCount={docStats.total}
+        signalsCount={signals.length}
+        risksCount={risks.length}
+        hasScore={!!creditScore}
+        reportsCount={reports.length}
+        activeStep={activeStep}
+      />
+
       {/* Pipeline Actions */}
-      <div className="metric-card">
-        <h2 className="section-title mb-3 flex items-center gap-2">
-          <Zap className="w-4 h-4" /> Underwriting Pipeline
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Run each step of the AI-powered credit assessment pipeline. Steps should be executed in order.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Button onClick={handleExtract} disabled={extracting} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
-            <span className="text-xs">Extract Financials</span>
-            {signals.length > 0 && <span className="text-[10px] text-risk-low">✓ {signals.length} signals</span>}
-          </Button>
-          <Button onClick={handleResearch} disabled={researching} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {researching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            <span className="text-xs">Secondary Research</span>
-            {risks.length > 0 && <span className="text-[10px] text-risk-low">✓ {risks.length} risks</span>}
-          </Button>
-          <Button onClick={handleScore} disabled={scoring} variant="outline" className="h-auto py-3 flex-col gap-1">
-            {scoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
-            <span className="text-xs">Credit Score</span>
-            {creditScore && <span className="text-[10px] text-risk-low">✓ {creditScore.total_score}/100</span>}
-          </Button>
-          <Button onClick={handleGenerateReport} disabled={generating} className="h-auto py-3 flex-col gap-1 bg-accent text-accent-foreground hover:bg-accent/90">
-            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
-            <span className="text-xs">Generate Report</span>
-            {reports.length > 0 && <span className="text-[10px]">✓ {reports.length} report(s)</span>}
-          </Button>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Button onClick={handleExtract} disabled={extracting} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
+          <span className="text-xs">Extract Financials</span>
+          {signals.length > 0 && <span className="text-[10px] text-risk-low">✓ {signals.length} signals</span>}
+        </Button>
+        <Button onClick={handleResearch} disabled={researching} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {researching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          <span className="text-xs">Secondary Research</span>
+          {risks.length > 0 && <span className="text-[10px] text-risk-low">✓ {risks.length} risks</span>}
+        </Button>
+        <Button onClick={handleScore} disabled={scoring} variant="outline" className="h-auto py-3 flex-col gap-1">
+          {scoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+          <span className="text-xs">Credit Score</span>
+          {creditScore && <span className="text-[10px] text-risk-low">✓ {creditScore.total_score}/100</span>}
+        </Button>
+        <Button onClick={handleGenerateReport} disabled={generating} className="h-auto py-3 flex-col gap-1 bg-accent text-accent-foreground hover:bg-accent/90">
+          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+          <span className="text-xs">Generate Report</span>
+          {reports.length > 0 && <span className="text-[10px]">✓ {reports.length} report(s)</span>}
+        </Button>
       </div>
 
       {/* Document Stats */}
@@ -356,6 +366,9 @@ export default function CompanyDetail() {
           </p>
         )}
       </div>
+
+      {/* Dynamic Schema Editor */}
+      {companyId && <SchemaEditor companyId={companyId} />}
 
       {/* Credit Score */}
       {creditScore && (
@@ -462,6 +475,15 @@ export default function CompanyDetail() {
             ))}
           </div>
         </div>
+      )}
+      {/* AI Risk Radar */}
+      {(risks.length > 0 || signals.length > 0) && company && (
+        <RiskRadar risks={risks} signals={signals} company={company} />
+      )}
+
+      {/* Data Triangulation */}
+      {(signals.length > 0 || risks.length > 0) && (
+        <TriangulationView signals={signals} risks={risks} research={research} />
       )}
 
       {/* Financial Snapshot */}
