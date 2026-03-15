@@ -208,7 +208,7 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Extraction failed');
     }
-    setExtracting(false);
+    setExtracting(false); setActiveStep(null);
   };
 
   const handleResearch = async () => {
