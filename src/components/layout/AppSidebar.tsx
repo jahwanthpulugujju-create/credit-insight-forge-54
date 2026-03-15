@@ -50,8 +50,8 @@ export default function AppSidebar() {
     >
       {/* Logo */}
       <div className="px-5 py-5 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center relative" style={{ background: 'hsl(var(--accent))' }}>
-          <Shield className="w-5 h-5" style={{ color: 'hsl(var(--accent-foreground))' }} />
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center relative overflow-hidden">
+          <img src={logoImg} alt="IntelliCredit" className="w-9 h-9 object-contain" />
           <div className="absolute inset-0 rounded-xl animate-glow-pulse" style={{ boxShadow: '0 0 15px hsl(var(--accent) / 0.3)' }} />
         </div>
         <div>

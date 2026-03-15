@@ -35,6 +35,7 @@ export default function FiveCsChart({ score }: { score: CreditScore }) {
           <Tooltip
             contentStyle={{ background: 'hsl(225, 25%, 10%)', border: '1px solid hsl(225, 20%, 16%)', borderRadius: 10, fontSize: 12, color: 'hsl(210, 20%, 92%)' }}
             formatter={(value: number, name: string) => [value, name === 'score' ? 'Score' : 'Max']}
+            labelStyle={{ color: 'hsl(210, 20%, 92%)' }}
           />
           <Bar dataKey="max" radius={[4, 4, 0, 0]} fill="hsl(225, 20%, 16%)" name="Max" />
           <Bar dataKey="score" radius={[4, 4, 0, 0]} name="Score">

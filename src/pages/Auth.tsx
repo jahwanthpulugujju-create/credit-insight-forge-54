@@ -105,8 +105,8 @@ export default function Auth() {
         <div className="w-full max-w-[380px] relative z-10">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent">
-              <Shield className="w-5 h-5 text-accent-foreground" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src={logoImg} alt="IntelliCredit" className="w-10 h-10 object-contain" />
             </div>
             <span className="font-display text-xl font-bold">Intelli-Credit</span>
           </div>
