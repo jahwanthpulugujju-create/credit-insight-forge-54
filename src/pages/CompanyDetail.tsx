@@ -185,7 +185,7 @@ export default function CompanyDetail() {
 
   const handleExtract = async () => {
     if (!companyId) return;
-    setExtracting(true);
+    setExtracting(true); setActiveStep('extract');
     try {
       // Get approved docs
       const { data: docs } = await supabase.from('documents').select('id').eq('company_id', companyId);
