@@ -386,7 +386,7 @@ export default function CompanyReport() {
       {/* Recommendation Details */}
       <div className="metric-card">
         <h2 className="section-title mb-3">Recommendation Details</h2>
-        <p className="text-sm leading-relaxed">{content?.recommendation_details}</p>
+        <p className="text-sm leading-relaxed">{cleanText(content?.recommendation_details)}</p>
         {content?.conditions && content.conditions.length > 0 && (
           <div className="mt-4">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Conditions</p>

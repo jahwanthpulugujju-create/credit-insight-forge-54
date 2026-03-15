@@ -140,8 +140,16 @@ export default function CompanyDetail() {
       supabase.from('reports').select('*').eq('company_id', companyId).order('created_at', { ascending: false }),
     ]);
 
-    if (companyRes.data) setCompany(companyRes.data);
-    setSignals(signalsRes.data ?? []);
+    // Deduplicate signals by signal_name (keep latest)
+    const rawSignals = signalsRes.data ?? [];
+    const signalMap = new Map<string, typeof rawSignals[0]>();
+    for (const s of rawSignals) {
+      const existing = signalMap.get(s.signal_name);
+      if (!existing || s.created_at > existing.created_at) {
+        signalMap.set(s.signal_name, s);
+      }
+    }
+    setSignals(Array.from(signalMap.values()));
     setRisks(risksRes.data ?? []);
     setCreditScore(scoreRes.data?.[0] ?? null);
     setReports(reportsRes.data ?? []);
