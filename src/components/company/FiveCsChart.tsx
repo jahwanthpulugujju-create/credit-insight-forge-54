@@ -27,11 +27,11 @@ export default function FiveCsChart({ score }: { score: CreditScore }) {
   return (
     <div className="metric-card">
       <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wider font-medium">Score vs Maximum by Component</p>
-      <ResponsiveContainer width="100%" height={220}>
+      <ResponsiveContainer width="100%" height={260}>
         <BarChart data={data} barGap={4}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(225, 20%, 16%)" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(215, 15%, 55%)' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: 'hsl(215, 15%, 55%)' }} axisLine={false} tickLine={false} domain={[0, 25]} />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(210, 20%, 92%)' }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 11, fill: 'hsl(210, 20%, 92%)' }} axisLine={false} tickLine={false} domain={[0, 25]} />
           <Tooltip
             contentStyle={{ background: 'hsl(225, 25%, 10%)', border: '1px solid hsl(225, 20%, 16%)', borderRadius: 10, fontSize: 12, color: 'hsl(210, 20%, 92%)' }}
             formatter={(value: number, name: string) => [value, name === 'score' ? 'Score' : 'Max']}
