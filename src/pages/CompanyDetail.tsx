@@ -253,7 +253,7 @@ export default function CompanyDetail() {
     } catch (e: any) {
       toast.error(e.message || 'Report generation failed');
     }
-    setGenerating(false);
+    setGenerating(false); setActiveStep(null);
   };
 
   if (loading) return <div className="text-center py-16 text-muted-foreground">Loading…</div>;
