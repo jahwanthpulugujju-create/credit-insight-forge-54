@@ -42,7 +42,7 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
   }, [companyId]);
 
   const loadSchema = async () => {
-    const { data: schemas } = await supabase
+    const { data: schemas } = await (supabase as any)
       .from('extraction_schemas')
       .select('id')
       .eq('company_id', companyId)
@@ -50,19 +50,19 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
 
     if (schemas && schemas.length > 0) {
       setSchemaId(schemas[0].id);
-      const { data: fieldData } = await supabase
+      const { data: fieldData } = await (supabase as any)
         .from('extraction_schema_fields')
         .select('*')
         .eq('schema_id', schemas[0].id)
         .order('display_order');
-      setFields(fieldData?.map(f => ({
+      setFields((fieldData || []).map((f: any) => ({
         id: f.id,
         field_name: f.field_name,
         field_type: f.field_type,
         source_document: f.source_document,
         is_required: f.is_required,
         display_order: f.display_order,
-      })) || []);
+      })));
     } else {
       setFields(DEFAULT_FIELDS);
     }
@@ -97,7 +97,7 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
       let sid = schemaId;
 
       if (!sid) {
-        const { data, error } = await supabase.from('extraction_schemas').insert({
+        const { data, error } = await (supabase as any).from('extraction_schemas').insert({
           company_id: companyId,
           created_by: user.id,
           schema_name: 'Default Schema',
@@ -108,7 +108,7 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
       }
 
       // Delete existing fields and re-insert
-      await supabase.from('extraction_schema_fields').delete().eq('schema_id', sid);
+      await (supabase as any).from('extraction_schema_fields').delete().eq('schema_id', sid);
 
       const inserts = validFields.map((f, i) => ({
         schema_id: sid!,
@@ -119,7 +119,7 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
         display_order: i,
       }));
 
-      const { error } = await supabase.from('extraction_schema_fields').insert(inserts);
+      const { error } = await (supabase as any).from('extraction_schema_fields').insert(inserts);
       if (error) throw error;
 
       toast.success('Extraction schema saved successfully.');
@@ -154,7 +154,7 @@ export default function SchemaEditor({ companyId }: { companyId: string }) {
         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Field Name</span>
         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</span>
         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Source Document</span>
-        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">Required</span>
+        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">Req</span>
         <span />
       </div>
 
