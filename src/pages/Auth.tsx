@@ -60,8 +60,8 @@ export default function Auth() {
 
         <div className="relative z-10 px-16 max-w-lg">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center relative" style={{ background: 'hsl(var(--accent))' }}>
-              <Shield className="w-6 h-6" style={{ color: 'hsl(var(--accent-foreground))' }} />
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center relative overflow-hidden">
+              <img src={logoImg} alt="IntelliCredit" className="w-11 h-11 object-contain" />
               <div className="absolute inset-0 rounded-xl animate-glow-pulse" style={{ boxShadow: '0 0 25px hsl(var(--accent) / 0.4)' }} />
             </div>
             <div>
