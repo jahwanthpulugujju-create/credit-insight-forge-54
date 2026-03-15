@@ -241,7 +241,7 @@ export default function CompanyDetail() {
 
   const handleGenerateReport = async () => {
     if (!companyId) return;
-    setGenerating(true);
+    setGenerating(true); setActiveStep('report');
     try {
       const { data, error } = await supabase.functions.invoke('generate-investment-report', {
         body: { companyId, generatedBy: user?.id },
