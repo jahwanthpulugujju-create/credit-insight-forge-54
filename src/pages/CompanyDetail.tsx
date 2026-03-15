@@ -120,6 +120,7 @@ export default function CompanyDetail() {
   const [docStats, setDocStats] = useState<DocStats>({ total: 0, pending: 0, approved: 0, corrected: 0, rejected: 0, unclassified: 0 });
   const [signals, setSignals] = useState<FinancialSignal[]>([]);
   const [risks, setRisks] = useState<RiskSignal[]>([]);
+  const [research, setResearch] = useState<any[]>([]);
   const [creditScore, setCreditScore] = useState<CreditScore | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -127,6 +128,7 @@ export default function CompanyDetail() {
   const [researching, setResearching] = useState(false);
   const [scoring, setScoring] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [activeStep, setActiveStep] = useState<string | null>(null);
 
   useEffect(() => {
     if (!companyId) return;
